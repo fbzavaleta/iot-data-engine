@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'iotengine'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: '%' # allow root access from any host'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - './db-prod:/var/lib/mysql'
+      - './local:/var/lib/mysql-files'
+
+  adminer:
+    depends_on:
+      - db
+    image: adminer:latest
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+
+
