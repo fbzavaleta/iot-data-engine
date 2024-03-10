@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
-
+"""
+Author: Francis Benjamin Zavaleta, Eng
+Copyright © fbzavaleta. All rights reserved.
+"""
 
 @dataclass(frozen=True)
 class ApiConstants:

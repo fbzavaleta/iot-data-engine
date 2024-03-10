@@ -5,7 +5,10 @@ from typing import Dict, List, Union, Iterator
 from app.engine.core.enums.thingspeaks import (
     ApiConstants, ApiParameters, ApiChannelResponse, ApiFeedResponse
 ) 
-
+"""
+Author: Francis Benjamin Zavaleta, Eng
+Copyright © fbzavaleta. All rights reserved.
+"""
 
 class ThingSpeaksRequestResponse:
     def __init__(self, channel_id: str, api_key: str=None, n_rows: int=None
