@@ -2,7 +2,6 @@ from engine.core.response.thingspeaks_response import ThingSpeaksRequestResponse
 from engine.core.enums.http_status import HttpStatus
 from engine.core.database import db_handler, db_model
 
-from flask import Blueprint, jsonify
 from functools import lru_cache as memoized
 """
 Author: Francis Benjamin Zavaleta, Eng
@@ -16,7 +15,7 @@ class ThingSpeaksService:
 
     @property
     @memoized(maxsize=1)
-    def ingest_channel_description(self) -> True:
+    def ingest_channel_description(self) -> dict:
         channel_description = self._get_channel_description
         if channel_description:
             db_handler.MysqlEngine().insert_row(db_model.Channel, channel_description)

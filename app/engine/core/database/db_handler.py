@@ -1,9 +1,9 @@
 import os
-import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.pool import QueuePool
 from sqlalchemy import select, column
+from sqlalchemy.exc import SQLAlchemyError
 from typing import Dict, Any
 
 from app.engine.core.enums.common import DatabaseParameters, DbPoolParameters
@@ -47,10 +47,15 @@ class MysqlEngine():
         Session = db_connection_pool.Session
         self.current_session = Session()
 
-    def insert_row(self, table_cls , data: Dict[str, Any]):    
+    def insert_row(self, table_cls , data: Dict[str, Any]) -> bool:
         new_row = table_cls(**data)
-        self.current_session.add(new_row)
-        self.current_session.commit()
+        try:
+            self.current_session.add(new_row)
+            self.current_session.commit()
+            return True
+        except SQLAlchemyError as e:
+            self.current_session.rollback()
+            return False
 
     def select_one(self, objecttable, colselected_list, colfilter, targetvalue):
         columns_selected = [column(col) for col in colselected_list]
@@ -68,13 +73,18 @@ class MysqlEngine():
         self.current_session.commit()    
         self.current_session.close()
 
-    def execute_query(self, filepath: str):
+    def execute_query(self, filepath: str) -> bool:
         if not os.path.isfile(filepath):
             raise FileNotFoundError(f"File '{filepath}' not found.")
-        with open(filepath, 'r') as file:
-            queries = file.read().split(';')
-            for query in queries:
-                if query.strip():
-                    self.current_session.execute(query)
-        self.current_session.commit()
+        try:
+            with open(filepath, 'r') as file:
+                queries = file.read().split(';')
+                for query in queries:
+                    if query.strip():
+                        self.current_session.execute(query)
+            self.current_session.commit()
+            return True
+        except SQLAlchemyError as e:
+            self.current_session.rollback()
+            return False
 
