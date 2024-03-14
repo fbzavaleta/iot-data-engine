@@ -2,7 +2,7 @@ import requests
 from functools import lru_cache as memoized
 from typing import Dict, List, Union, Iterator
 
-from app.engine.core.enums.thingspeaks import (
+from engine.core.enums.thingspeaks import (
     ApiConstants, ApiParameters, ApiChannelResponse, ApiFeedResponse
 ) 
 """

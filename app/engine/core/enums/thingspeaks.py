@@ -11,24 +11,24 @@ class ApiConstants:
     channel_key: str = 'channel'
     feed_key: str = 'feeds'
 
-@dataclass
+@dataclass(frozen=False)
 class ApiParameters:
-    api_key: Optional[str] = None #None if it is a public channel
-    n_rows: Optional[int] = None
     channel_id: str
     interval: int
+    api_key: Optional[str] = None #None if it is a public channel
+    n_rows: Optional[int] = None
 
-@dataclass
+@dataclass(frozen=False)
 class ApiChannelResponse:
     id: str
     name: str
-    description: Optional[str] = None
     latitude: float
     longitude: float
     created_at: str
     updated_at: str
+    last_entry_id: int
+    description: Optional[str] = None
     elevation: Optional[float] = None
-    last_entry_id: int    
     field1: Optional[str] = None
     field2: Optional[str] = None
     field3: Optional[str] = None
@@ -38,7 +38,7 @@ class ApiChannelResponse:
     field7: Optional[str] = None
     field8: Optional[str] = None
 
-@dataclass
+@dataclass(frozen=False)
 class ApiFeedResponse:
     created_at: str
     entry_id: int

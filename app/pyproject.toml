@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "thingspeaks-engine"
+version = "0.1.0"
+description = "Data engine to fetch and ingest data from thingspeaks"
+authors = ["fbzavaleta <benjamin.zavaleta@grieletlabs.com>"]
+license = "GNU"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^3.0.2"
+sqlalchemy = "^2.0.28"
+mysql-connector-python = "^8.3.0"
+choicesenum = "^0.7.0"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -11,18 +11,19 @@ Copyright © fbzavaleta. All rights reserved.
 """
 
 class EngineService:
-    def __init__(self, channel: str=None, token: str=None) -> None:
+    def __init__(self, channel: str=None, token: str=None, request=None) -> None:
         self.channel = channel
         self.token = token
+        self.engine_response = EngineResponse(request)
     
-    @property
-    @memoized(maxsize=1)
-    def register_endpoint(self) -> bool:
+    def register_endpoint(self,) -> bool:
+        is_valid_request = self.engine_response.validate_query_parameters
         sucess = False
-        row = EngineEndpoint(channel=self.channel, token=self.token)
-        db_operation = db_handler.MysqlEngine().get_row(db_model.EngineEndpoint, asdict(row))
-        if db_operation:
-            sucess = True
+        if is_valid_request:
+            row = EngineEndpoint(channel=self.channel, token=self.token)
+            db_operation = db_handler.MysqlEngine().get_row(db_model.EngineEndpoint, asdict(row))
+            if db_operation:
+                sucess = True
         return sucess
     
     @property
