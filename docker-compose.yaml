@@ -14,6 +14,8 @@ services:
     volumes:
       - './db-prod:/var/lib/mysql'
       - './local:/var/lib/mysql-files'
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    command: --init-file=/docker-entrypoint-initdb.d/database.sql
 
 # WebUI for mysql database
   adminer:
