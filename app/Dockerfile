@@ -7,6 +7,8 @@ RUN pip3 install numpy
 
 WORKDIR /usr/app/rand-generator
 
-COPY ./main.py .
+COPY ./engine .
+COPY ./run_engine.py .
+COPY ./database.sql .
 
-CMD ["python3", "./main.py"]
+CMD ["python3", "./run_engine.py"]

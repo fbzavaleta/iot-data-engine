@@ -11,11 +11,9 @@ class Models():
     class EngineEndpoint(Base):
         __tablename__ = 'engine_endpoint'
         id = Column(Integer, primary_key=True)
-        channel = Column(String(255), nullable=False)
+        channel = Column(String(255), nullable=False, unique=True)
         token = Column(String(255), nullable=False)
-        is_active = Column(Boolean, nullable=False)
-        created_at = Column(DateTime, nullable=False)
-        updated_at = Column(DateTime, nullable=False)
+        is_active = Column(Boolean, nullable=False, default=True)
 
     class EngineEndpointDescription(Base):
         __tablename__ = 'engine_endpoint_description'

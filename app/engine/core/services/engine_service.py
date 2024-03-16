@@ -1,7 +1,12 @@
 from engine.core.response.engine_response import EngineResponse
-from engine.core.enums.engine import EngineEndpoint
+from engine.core.enums.engine import (
+    ErrorCode, ErrorMessage, EngineErrors,
+    SucessCode, SucessMessage, EngineSuccess
+)
 from engine.core.enums.common import ApiNotes
-from engine.core.database import db_handler, db_model
+from engine.core.database import db_handler
+from engine.core.database.db_model import Models
+from flask import Request
 
 from functools import lru_cache as memoized
 from dataclasses import asdict
@@ -11,22 +16,40 @@ Copyright © fbzavaleta. All rights reserved.
 """
 
 class EngineService:
-    def __init__(self, channel: str=None, token: str=None, request=None) -> None:
-        self.channel = channel
-        self.token = token
-        self.engine_response = EngineResponse(request)
+    def __init__(self, request: Request=None) -> None:
+        self.request = request
+        self.engine_response = EngineResponse()
     
+    @property
+    @memoized(maxsize=1)
     def register_endpoint(self,) -> bool:
-        is_valid_request = self.engine_response.validate_query_parameters
-        sucess = False
-        if is_valid_request:
-            row = EngineEndpoint(channel=self.channel, token=self.token)
-            db_operation = db_handler.MysqlEngine().get_row(db_model.EngineEndpoint, asdict(row))
-            if db_operation:
-                sucess = True
-        return sucess
+        endpoint_config = self.engine_response.fetch_query_parameters(
+            self.get_query_parameters)
+        
+        if not endpoint_config:
+            return EngineErrors(ErrorCode.INVALID_INPUTS, ErrorMessage.INVALID_INPUTS).to_dict
+        
+        if not endpoint_config.channel:
+            return EngineErrors(ErrorCode.CHANNEL_NOT_FOUND, ErrorMessage.CHANNEL_NOT_FOUND).to_dict
+        
+        db_operation = db_handler.MysqlEngine().insert_row(Models().EngineEndpoint, asdict(endpoint_config))
+        if not db_operation:
+            return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
+        
+        return EngineSuccess(SucessCode.ENDPOINT_REGISTRATION, SucessMessage.ENDPOINT_REGISTRATION).to_dict
     
     @property
     @memoized(maxsize=1)
     def get_api_notes(self) -> dict:
         return asdict(ApiNotes())
+    
+    @property
+    @memoized(maxsize=1)
+    def get_query_parameters(self) -> dict:
+        return self.request.args
+    
+    @property
+    @memoized(maxsize=1)
+    def get_body_data(self) -> bytes:
+        return self.request.get_data()
+

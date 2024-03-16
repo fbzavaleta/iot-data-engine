@@ -1,9 +1,8 @@
 [tool.poetry]
-name = "thingspeaks-engine"
+name = "app"
 version = "0.1.0"
-description = "Data engine to fetch and ingest data from thingspeaks"
-authors = ["fbzavaleta <benjamin.zavaleta@grieletlabs.com>"]
-license = "GNU"
+description = ""
+authors = ["fbzavaleta <benjamin.zavaleta@crunchyroll.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -14,6 +13,8 @@ mysql-connector-python = "^8.3.0"
 choicesenum = "^0.7.0"
 requests = "^2.31.0"
 
+[tool.poetry.scripts]
+engine = "main:run"
 
 [build-system]
 requires = ["poetry-core"]

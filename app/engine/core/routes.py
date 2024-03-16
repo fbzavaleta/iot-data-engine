@@ -17,7 +17,6 @@ def index():
 @bp.route('/configuration',  methods=['POST'])
 def configure_engine():
     request_data = request
-    print(request_data)
     payload = EngineService(request = request_data).register_endpoint
     return  jsonify(payload),   HttpStatus.OK.value
 
