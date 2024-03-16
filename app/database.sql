@@ -1,14 +1,18 @@
 -- Author: Francis Benjamin Zavaleta, Eng
 -- Copyright © fbzavaleta. All rights reserved.
 
+CREATE DATABASE IF NOT EXISTS tks_engine;
+USE tks_engine;
+
 CREATE TABLE engine_endpoint(
     id INT NOT NULL AUTO_INCREMENT,
     channel VARCHAR (255) NOT NULL,
     token  VARCHAR (255)  NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
+    UNIQUE KEY channel_unique (channel)
 );
 
 CREATE TABLE engine_endpoint_description (
