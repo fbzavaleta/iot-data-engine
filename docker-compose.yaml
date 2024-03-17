@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   db:
-    image: mysql/mysql-server:5.7
+    image: mysql
     restart: 'no'
     environment:
       MYSQL_DATABASE: 'tks_engine'
@@ -14,7 +14,7 @@ services:
     volumes:
       - './db-prod:/var/lib/mysql'
       - './local:/var/lib/mysql-files'
-      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./app/database.sql:/docker-entrypoint-initdb.d/database.sql
     command: --init-file=/docker-entrypoint-initdb.d/database.sql
 
 # WebUI for mysql database
