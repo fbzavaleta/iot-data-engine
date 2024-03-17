@@ -46,9 +46,9 @@ class SucessMessage:
 
 @dataclass(frozen=False)
 class EngineSuccess:
-    error_code: SucessCode
-    error_msg: SucessMessage
+    sucess_code: SucessCode
+    sucess_msg: SucessMessage
 
     @property
     def to_dict(self):
-        return {'error_code': self.error_code.value, 'error_msg': self.error_msg}    
+        return {'error_code': self.sucess_code.value, 'error_msg': self.sucess_msg}    

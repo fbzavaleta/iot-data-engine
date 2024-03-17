@@ -1,4 +1,4 @@
-from engine.core.response.engine_response import EngineResponse
+from engine.core.lib.engine_response import EngineResponse
 from engine.core.enums.engine import (
     ErrorCode, ErrorMessage, EngineErrors,
     SucessCode, SucessMessage, EngineSuccess
@@ -17,15 +17,12 @@ Copyright © fbzavaleta. All rights reserved.
 
 class EngineService:
     def __init__(self, request: Request=None) -> None:
-        self.request = request
-        self.engine_response = EngineResponse()
+        self.engine_response = EngineResponse(request)
     
     @property
     @memoized(maxsize=1)
     def register_endpoint(self,) -> bool:
-        endpoint_config = self.engine_response.fetch_query_parameters(
-            self.get_query_parameters)
-        
+        endpoint_config = self.engine_response.fetch_query_parameters
         if not endpoint_config:
             return EngineErrors(ErrorCode.INVALID_INPUTS, ErrorMessage.INVALID_INPUTS).to_dict
         
@@ -42,14 +39,4 @@ class EngineService:
     @memoized(maxsize=1)
     def get_api_notes(self) -> dict:
         return asdict(ApiNotes())
-    
-    @property
-    @memoized(maxsize=1)
-    def get_query_parameters(self) -> dict:
-        return self.request.args
-    
-    @property
-    @memoized(maxsize=1)
-    def get_body_data(self) -> bytes:
-        return self.request.get_data()
 

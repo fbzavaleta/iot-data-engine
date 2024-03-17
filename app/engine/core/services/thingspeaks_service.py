@@ -1,6 +1,8 @@
-from engine.core.response.thingspeaks_response import ThingSpeaksRequestResponse
+from engine.core.lib.thingspeaks_response import ThingSpeaksRequestResponse
 from engine.core.enums.http_status import HttpStatus
+from engine.core.lib.engine_response import EngineResponse
 from engine.core.database import db_handler, db_model
+from flask import Request
 
 from functools import lru_cache as memoized
 """
@@ -9,9 +11,8 @@ Copyright © fbzavaleta. All rights reserved.
 """
 
 class ThingSpeaksService:
-    def __init__(self, channel_id: str, api_key: str,
-                    n_rows: int, interval: int) -> None:
-        self.request_response = ThingSpeaksRequestResponse(channel_id, api_key, n_rows, interval)
+    def __init__(self, request: Request=None) -> None:
+        self.engine_response = EngineResponse(request)
 
     @property
     @memoized(maxsize=1)

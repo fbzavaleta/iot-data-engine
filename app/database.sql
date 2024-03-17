@@ -1,21 +1,25 @@
 -- Author: Francis Benjamin Zavaleta, Eng
 -- Copyright © fbzavaleta. All rights reserved.
 
+-- Check if the schema tks_engine exists
+SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'tks_engine';
+
+-- If the schema does not exist, create it along with the tables
 CREATE DATABASE IF NOT EXISTS tks_engine;
 USE tks_engine;
 
-CREATE TABLE engine_endpoint(
+CREATE TABLE IF NOT EXISTS  engine_endpoint(
     id INT NOT NULL AUTO_INCREMENT,
     channel VARCHAR (255) NOT NULL,
     token  VARCHAR (255)  NOT NULL,
     is_active BOOLEAN DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
     UNIQUE KEY channel_unique (channel)
 );
 
-CREATE TABLE engine_endpoint_description (
+CREATE TABLE IF NOT EXISTS  engine_endpoint_description (
     id INT NOT NULL,
     engine_endpoint_id INT NOT NULL,
     channel_name VARCHAR (255) NOT NULL,
@@ -26,7 +30,7 @@ CREATE TABLE engine_endpoint_description (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE engine_endpoint_description_fields (
+CREATE TABLE IF NOT EXISTS  engine_endpoint_description_fields (
     id INT NOT NULL,
     engine_endpoint_description_id INT NOT NULL,
     field1_name VARCHAR (255),
@@ -41,7 +45,7 @@ CREATE TABLE engine_endpoint_description_fields (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE engine_data_sample (
+CREATE TABLE IF NOT EXISTS  engine_data_sample (
     id INT NOT NULL,
     engine_endpoint_id INT NOT NULL,
     entry_id INT NOT NULL,
