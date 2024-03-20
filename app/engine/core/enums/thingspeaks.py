@@ -13,10 +13,21 @@ class ApiConstants:
 
 @dataclass(frozen=False)
 class ApiParameters:
-    channel_id: str
-    interval: int
-    api_key: Optional[str] = None #None if it is a public channel
+    channel_id: str = None
+    api_key: Optional[str] = None
+    interval: int = None
     n_rows: Optional[int] = None
+    endpoint_id: Optional[id] = None
+    
+
+    def __init__(self, channel_id: Optional[str] = None, api_key: Optional[str] = None, 
+                 interval: Optional[int]=None,n_rows: Optional[int]=None,
+                 endpoint_id: Optional[int]=None,**kwargs) -> None:
+        self.channel_id = channel_id
+        self.token = api_key
+        self.interval = interval
+        self.n_rows = n_rows
+        self.endpoint_id = endpoint_id
 
 @dataclass(frozen=False)
 class ApiChannelResponse:

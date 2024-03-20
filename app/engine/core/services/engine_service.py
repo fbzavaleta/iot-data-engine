@@ -1,4 +1,5 @@
 from engine.core.lib.engine_response import EngineResponse
+from engine.core.enums.engine import EngineEndpoint
 from engine.core.enums.engine import (
     ErrorCode, ErrorMessage, EngineErrors,
     SucessCode, SucessMessage, EngineSuccess
@@ -22,7 +23,7 @@ class EngineService:
     @property
     @memoized(maxsize=1)
     def register_endpoint(self,) -> bool:
-        endpoint_config = self.engine_response.fetch_query_parameters
+        endpoint_config = EngineEndpoint(**self.engine_response.fetch_query_parameters)
         if not endpoint_config:
             return EngineErrors(ErrorCode.INVALID_INPUTS, ErrorMessage.INVALID_INPUTS).to_dict
         

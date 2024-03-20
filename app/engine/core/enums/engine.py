@@ -49,6 +49,6 @@ class EngineSuccess:
     sucess_code: SucessCode
     sucess_msg: SucessMessage
 
-    @property
+    @property #TODO: This should be a decorator
     def to_dict(self):
-        return {'error_code': self.sucess_code.value, 'error_msg': self.sucess_msg}    
+        return {'sucess_code': self.sucess_code.value, 'sucess_msg': self.sucess_msg}    

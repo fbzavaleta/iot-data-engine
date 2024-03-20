@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from engine.core.services import thingspeaks_service
+from engine.core.services.thingspeaks_service import ThingSpeaksService
 from engine.core.services.engine_service import EngineService
 from engine.core.enums.http_status import HttpStatus
 from flask import jsonify, request
@@ -23,7 +23,7 @@ def configure_engine():
 @bp.route('/ingest',  methods=['POST'])
 def ingest_data():
     request_data = request
-    payload = EngineService(request = request_data).register_endpoint
+    payload = ThingSpeaksService(request = request_data).ingest_channel_description
     return  jsonify(payload),   HttpStatus.OK.value
 
 @bp_v1.route('/',   methods=['GET'])
