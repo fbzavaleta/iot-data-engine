@@ -20,12 +20,12 @@ class Models():
         id = Column(Integer, primary_key=True)
         engine_endpoint_id = Column(Integer, ForeignKey('engine_endpoint.id'), nullable=False)
         channel_name = Column(String(255), nullable=False)
-        latirude = Column(Float, nullable=True)
+        latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
         elevation = Column(Float, nullable=True)
 
     class EngineEndpointDescriptionField(Base):
-        __tablename__ = 'engine_endpoint_description_field'
+        __tablename__ = 'engine_endpoint_description_fields'
         id = Column(Integer, primary_key=True)
         engine_endpoint_description_id = Column(Integer, ForeignKey('engine_endpoint_description.id'), nullable=False)
         field1_name = Column(String(255), nullable=True)

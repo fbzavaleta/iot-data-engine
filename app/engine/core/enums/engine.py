@@ -51,4 +51,36 @@ class EngineSuccess:
 
     @property #TODO: This should be a decorator
     def to_dict(self):
-        return {'sucess_code': self.sucess_code.value, 'sucess_msg': self.sucess_msg}    
+        return {'sucess_code': self.sucess_code.value, 'sucess_msg': self.sucess_msg}
+    
+@dataclass(frozen=False)
+class EndpointDescription:
+    engine_endpoint_id: int = None
+    channel_name: str = None
+    latitude: float = None
+    longitude: float = None
+    elevation: float = None
+
+    @property #TODO: This should be a decorator
+    def to_dict(self):
+        return {'engine_endpoint_id': self.engine_endpoint_id, 'channel_name': self.channel_name,
+                'latitude': self.latitude, 'longitude': self.longitude, 'elevation': self.elevation}
+    
+@dataclass(frozen=False)
+class EndpointDescriptionField:
+    engine_endpoint_description_id: int = None
+    field1_name: str = None
+    field2_name: str = None
+    field3_name: str = None
+    field4_name: str = None
+    field5_name: str = None
+    field6_name: str = None
+    field7_name: str = None
+    field8_name: str = None
+
+    @property #TODO: This should be a decorator
+    def to_dict(self):
+        return {'engine_endpoint_description_id': self.engine_endpoint_description_id, 'field1_name': self.field1_name,
+                'field2_name': self.field2_name, 'field3_name': self.field3_name, 'field4_name': self.field4_name,
+                'field5_name': self.field5_name, 'field6_name': self.field6_name, 'field7_name': self.field7_name,
+                'field8_name': self.field8_name}

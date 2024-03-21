@@ -24,7 +24,7 @@ class ApiParameters:
                  interval: Optional[int]=None,n_rows: Optional[int]=None,
                  endpoint_id: Optional[int]=None,**kwargs) -> None:
         self.channel_id = channel_id
-        self.token = api_key
+        self.api_key = api_key
         self.interval = interval
         self.n_rows = n_rows
         self.endpoint_id = endpoint_id

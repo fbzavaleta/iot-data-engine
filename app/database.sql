@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS  engine_endpoint(
 );
 
 CREATE TABLE IF NOT EXISTS  engine_endpoint_description (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     engine_endpoint_id INT NOT NULL,
     channel_name VARCHAR (255) NOT NULL,
     latitude FLOAT,
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS  engine_endpoint_description (
 );
 
 CREATE TABLE IF NOT EXISTS  engine_endpoint_description_fields (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     engine_endpoint_description_id INT NOT NULL,
     field1_name VARCHAR (255),
     field2_name VARCHAR (255),
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS  engine_endpoint_description_fields (
 );
 
 CREATE TABLE IF NOT EXISTS  engine_data_sample (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     engine_endpoint_id INT NOT NULL,
     entry_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL,

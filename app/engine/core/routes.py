@@ -4,6 +4,10 @@ from engine.core.services.thingspeaks_service import ThingSpeaksService
 from engine.core.services.engine_service import EngineService
 from engine.core.enums.http_status import HttpStatus
 from flask import jsonify, request
+"""
+Author: Francis Benjamin Zavaleta, Eng
+Copyright © fbzavaleta. All rights reserved.
+"""
 
 bp  =   Blueprint('engine', __name__)
 bp_v1   =   Blueprint('analytics', __name__)
@@ -28,5 +32,5 @@ def ingest_data():
 
 @bp_v1.route('/',   methods=['GET'])
 def index(): 
-    payload = engine_service().get_api_notes
+    payload = EngineService().get_api_notes
     return  jsonify(payload),   HttpStatus.OK.value

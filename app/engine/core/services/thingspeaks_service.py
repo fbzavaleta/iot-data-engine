@@ -2,8 +2,9 @@ from engine.core.lib.thingspeaks_response import ThingSpeaksRequestResponse
 from engine.core.lib.engine_response import EngineResponse
 from engine.core.enums.engine import (
     ErrorCode, ErrorMessage, EngineErrors,
-    SucessCode, SucessMessage, EngineSuccess)
-from engine.core.enums.thingspeaks import ApiParameters
+    SucessCode, SucessMessage, EngineSuccess,
+    EndpointDescription, EndpointDescriptionField)
+from engine.core.enums.thingspeaks import ApiParameters, ApiChannelResponse
 from engine.core.database import db_handler
 from engine.core.database.db_model import Models
 from flask import Request
@@ -17,23 +18,64 @@ Copyright © fbzavaleta. All rights reserved.
 
 class ThingSpeaksService:
     def __init__(self, request: Request=None) -> None:
+        self.sql_engine = db_handler.MysqlEngine()
+        self.endpoint_table = Models().EngineEndpoint
+        self.endpoint_description_table = Models().EngineEndpointDescription
+        self.endpoint_description_field_table = Models().EngineEndpointDescriptionField
         self.engine_response = EngineResponse(request)
+        self.api_parameters = self._get_api_parameters
 
     @property
     @memoized(maxsize=1)
     def ingest_channel_description(self) -> dict:
-        api_parameters = self._get_api_parameters
-
-        if not api_parameters:
+        if not self.api_parameters:
             return EngineErrors(ErrorCode.INVALID_INPUTS, ErrorMessage.INVALID_INPUTS).to_dict
-        print(f"api_parameters: {api_parameters}") #FIXME: Remove this line
+        tks_client = ThingSpeaksRequestResponse(self.api_parameters.channel_id, self.api_parameters.api_key,
+                                                  self.api_parameters.n_rows, self.api_parameters.interval)
+        channel_description_response = tks_client.get_channel_response
+
+        if not self._skip_ingest_descriptions:
+            desciptions_row = self.populate_descriptions_row(channel_description_response)
+            db_operation = db_handler.MysqlEngine().insert_row(Models().EngineEndpointDescription,
+                                                           desciptions_row.to_dict)
+            if not db_operation:
+                return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
         
-        #if channel_description:
-        #    db_handler.MysqlEngine().insert_row(db_model.Channel, channel_description)
-        #    return jsonify({'status': HttpStatus.OK, 'message': 'Channel description ingested'})
-        #return jsonify({'status': HttpStatus.NOT_FOUND, 'message': 'Channel not found'})
+        if not self._skip_ingest_descriptions_field:
+            description_field_row = self.populate_descriptions_row(channel_description_response)
+            db_operation = db_handler.MysqlEngine().insert_row(self.endpoint_description_field_table,
+                                                           description_field_row.to_dict)
+            if not db_operation:
+                return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
+
+        feed_generator = tks_client.get_feed_response
+        last_entry_row = channel_description_response.last_entry_id
+        
         return {}
     
+    def populate_descriptions_row(self, tks_response: ApiChannelResponse) -> EndpointDescription:
+        endpoint_desc_row = EndpointDescription()
+        endpoint_desc_row.engine_endpoint_id = self.api_parameters.endpoint_id
+        endpoint_desc_row.channel_name = tks_response.name
+        endpoint_desc_row.latitude = tks_response.latitude
+        endpoint_desc_row.longitude = tks_response.longitude
+        endpoint_desc_row.elevation = tks_response.elevation
+        return endpoint_desc_row
+    
+    def populate_descriptions_row(self, tks_response: ApiChannelResponse) -> EndpointDescriptionField:
+         endpoint_desc_field_row = EndpointDescriptionField()
+         endpoint_desc_field_row.engine_endpoint_description_id = self._get_endpoint_description_id
+         endpoint_desc_field_row.field1_name = tks_response.field1
+         endpoint_desc_field_row.field2_name = tks_response.field2
+         endpoint_desc_field_row.field3_name = tks_response.field3
+         endpoint_desc_field_row.field4_name = tks_response.field4
+         endpoint_desc_field_row.field5_name = tks_response.field5
+         endpoint_desc_field_row.field6_name = tks_response.field6
+         endpoint_desc_field_row.field7_name = tks_response.field7
+         endpoint_desc_field_row.field8_name = tks_response.field8
+         
+         return endpoint_desc_field_row
+
     @property
     @memoized(maxsize=1)
     def _get_api_parameters(self) -> Union[ApiParameters, None]:
@@ -45,20 +87,47 @@ class ThingSpeaksService:
         
         endpoint_id_token = self._get_endpoint_token_id(channel_id)
         parameters.channel_id = channel_id
-        parameters.endpoint_id, parameters.token = endpoint_id_token.values()
+        parameters.endpoint_id, parameters.api_key = endpoint_id_token.values()
 
         return parameters
-
+    
+    def _get_endpoint_token_id(self, channel_id: str)-> dict:
+        data = self.sql_engine.select_one(self.endpoint_table,
+                                     [self.endpoint_table.id.name, self.endpoint_table.token.name],
+                                     self.endpoint_table.channel.name, channel_id)
+        return {'endpoint_id': data[0], 'api_key': data[1]}
+    
     @property
     @memoized(maxsize=1)
-    def _get_channel_feed(self):
-        return self.request_response.fetch_body_data
+    def _get_endpoint_description_id(self)-> Union[int, None]:
+        data = self.sql_engine.select_one(self.endpoint_description_table,
+                                     [self.endpoint_description_table.id.name],
+                                     self.endpoint_description_table.engine_endpoint_id.name, self.api_parameters.endpoint_id)
+        return data[0] if data else None
+
+    @property
+    @memoized(maxsize=1)    
+    def _skip_ingest_descriptions(self)-> bool:
+        if self._get_endpoint_description_id:
+            return True
+        return False
     
-    @memoized(maxsize=1)
-    def _get_endpoint_token_id(self, channel_id: str)-> dict:
-        endpoint = Models().EngineEndpoint
-        sql_engine = db_handler.MysqlEngine()
-        data = sql_engine.select_one(endpoint,
-                                     [endpoint.id.name, endpoint.token.name],
-                                     endpoint.channel.name, channel_id)
-        return {'endpoint_id': data[0], 'api_key': data[1]}
+    @property
+    @memoized(maxsize=1)    
+    def _get_endpoint_description_field_id(self)-> Union[int, None]:
+        data = self.sql_engine.select_one(self.endpoint_description_field_table,
+                                     [self.endpoint_description_field_table.id.name],
+                                     self.endpoint_description_field_table.engine_endpoint_description_id.name, self._get_endpoint_description_id)
+        return data[0] if data else None
+    
+    @property
+    @memoized(maxsize=1)    
+    def _skip_ingest_descriptions_field(self)-> bool:
+        if self._get_endpoint_description_field_id:
+            return True
+        return False
+    
+    def _skip_ingest_feed(self, last_entry)-> bool:
+        #consultar la ultima row en la base de datos:
+        self.api_parameters.endpoint_id
+        #si es igual a la last_entry
