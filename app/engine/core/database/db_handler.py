@@ -54,10 +54,23 @@ class MysqlEngine():
             self.current_session.commit()
             return True
         except SQLAlchemyError as e:
+            print(e)
             self.current_session.rollback()
             return False
 
-    def select_one(self, objecttable, colselected_list, colfilter, targetvalue):
+    def select_one(self, objecttable, colselected_list, colfilter, targetvalue, fetch_all:bool=False):
+        columns_selected = [column(col) for col in colselected_list]
+        column_filter = column(colfilter)
+
+        query = select(*columns_selected).where(column_filter == targetvalue).select_from(objecttable)
+        result = self.current_session.execute(query)
+
+        if fetch_all:
+            return result.fetchall()
+        
+        return result.fetchone()
+    
+    def group_by(self, objecttable, colselected_list, colfilter, targetvalue):
         columns_selected = [column(col) for col in colselected_list]
         column_filter = column(colfilter)
 

@@ -3,12 +3,13 @@ from engine.core.lib.engine_response import EngineResponse
 from engine.core.enums.engine import (
     ErrorCode, ErrorMessage, EngineErrors,
     SucessCode, SucessMessage, EngineSuccess,
-    EndpointDescription, EndpointDescriptionField)
+    EndpointDescription, EndpointDescriptionField, EngineDataSample)
 from engine.core.enums.thingspeaks import ApiParameters, ApiChannelResponse
 from engine.core.database import db_handler
 from engine.core.database.db_model import Models
 from flask import Request
-from typing import Dict, Union
+from typing import Dict, Union, Iterator
+from datetime import datetime
 
 from functools import lru_cache as memoized
 """
@@ -22,8 +23,10 @@ class ThingSpeaksService:
         self.endpoint_table = Models().EngineEndpoint
         self.endpoint_description_table = Models().EngineEndpointDescription
         self.endpoint_description_field_table = Models().EngineEndpointDescriptionField
+        self.sample_table = Models().EngineDataSample
         self.engine_response = EngineResponse(request)
         self.api_parameters = self._get_api_parameters
+        self.new_rows = 0
 
     @property
     @memoized(maxsize=1)
@@ -47,11 +50,19 @@ class ThingSpeaksService:
                                                            description_field_row.to_dict)
             if not db_operation:
                 return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
-
-        feed_generator = tks_client.get_feed_response
-        last_entry_row = channel_description_response.last_entry_id
+            
+        if not self._skip_ingest_feed(channel_description_response.last_entry_id):
+            if self.new_rows > 0:
+                self.api_parameters.n_rows = self.new_rows
+                tks_client = ThingSpeaksRequestResponse(self.api_parameters.channel_id, self.api_parameters.api_key,
+                                                        self.api_parameters.n_rows, self.api_parameters.interval)                
+            ingest_operation = self._ingest_feed(tks_client.get_feed_response)
+            if not ingest_operation:
+                return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
+            self.new_rows = 0
+            return EngineSuccess(SucessCode.INGESTION_SUCCESS, SucessMessage.INGESTION_SUCCESS).to_dict
         
-        return {}
+        return EngineSuccess(SucessCode.NO_NEW_DATA, SucessMessage.NO_NEW_DATA).to_dict
     
     def populate_descriptions_row(self, tks_response: ApiChannelResponse) -> EndpointDescription:
         endpoint_desc_row = EndpointDescription()
@@ -128,6 +139,28 @@ class ThingSpeaksService:
         return False
     
     def _skip_ingest_feed(self, last_entry)-> bool:
-        #consultar la ultima row en la base de datos:
-        self.api_parameters.endpoint_id
-        #si es igual a la last_entry
+        data = self.sql_engine.select_one(self.sample_table,
+                                     [self.sample_table.entry_id.name],
+                                     self.sample_table.engine_endpoint_id.name, self.api_parameters.endpoint_id, True)
+        last_entry_db =  max(data)[0] if data else None
+
+        if not last_entry_db: #there is no any data in the table for these channel
+            return False
+        if (last_entry_db < last_entry): #there new data arrived
+            self.new_rows = last_entry - last_entry_db
+            return False
+        return True #there is no new data
+
+    def _ingest_feed(self, feed_generator: Iterator[Dict]) -> None:
+        for feed in feed_generator:
+            format_row = EngineDataSample(**feed)
+            format_row.engine_endpoint_id = self.api_parameters.endpoint_id
+            format_row.created_at = self._get_datetime(format_row.created_at)
+            db_operation = db_handler.MysqlEngine().insert_row(self.sample_table,
+                                                format_row.to_dict)
+            if not db_operation:
+                return False
+        return True
+    
+    def _get_datetime(self, datetime_string: str)-> str: #TODO: This should be included in a helper class
+        return datetime_string.replace('Z', '+00:00')

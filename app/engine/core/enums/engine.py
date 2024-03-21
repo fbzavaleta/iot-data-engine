@@ -39,10 +39,14 @@ class EngineErrors:
     
 class SucessCode(Enum):
     ENDPOINT_REGISTRATION = 1
+    INGESTION_SUCCESS = 2
+    NO_NEW_DATA = 3
 
 @dataclass(frozen=False)
 class SucessMessage:
     ENDPOINT_REGISTRATION = "Endpoint registered successfully"
+    INGESTION_SUCCESS = "Data ingestion successful"
+    NO_NEW_DATA = "No new data to ingest"
 
 @dataclass(frozen=False)
 class EngineSuccess:
@@ -84,3 +88,23 @@ class EndpointDescriptionField:
                 'field2_name': self.field2_name, 'field3_name': self.field3_name, 'field4_name': self.field4_name,
                 'field5_name': self.field5_name, 'field6_name': self.field6_name, 'field7_name': self.field7_name,
                 'field8_name': self.field8_name}
+    
+@dataclass(frozen=False)
+class EngineDataSample:
+    engine_endpoint_id: int = None
+    entry_id: int = None
+    created_at: str = None
+    field1: float = None
+    field2: float = None
+    field3: float = None
+    field4: float = None
+    field5: float = None
+    field6: float = None
+    field7: float = None
+    field8: float = None
+
+    @property #TODO: This should be a decorator
+    def to_dict(self):
+        return {'engine_endpoint_id': self.engine_endpoint_id, 'entry_id': self.entry_id, 'created_at': self.created_at,
+                'field1': self.field1, 'field2': self.field2, 'field3': self.field3, 'field4': self.field4,
+                'field5': self.field5, 'field6': self.field6, 'field7': self.field7, 'field8': self.field8}
