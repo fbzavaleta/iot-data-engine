@@ -17,16 +17,17 @@ class Models():
 
     class EngineEndpointDescription(Base):
         __tablename__ = 'engine_endpoint_description'
-        id = Column(Integer, primary_key=True)
+        id = Column(Integer, primary_key=True, autoincrement=True)
         engine_endpoint_id = Column(Integer, ForeignKey('engine_endpoint.id'), nullable=False)
         channel_name = Column(String(255), nullable=False)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
-        elevation = Column(Float, nullable=True)
+        elevation = Column(String, nullable=True)
+        last_row = Column(Integer, nullable=True)
 
     class EngineEndpointDescriptionField(Base):
         __tablename__ = 'engine_endpoint_description_fields'
-        id = Column(Integer, primary_key=True)
+        id = Column(Integer, primary_key=True, autoincrement=True)
         engine_endpoint_description_id = Column(Integer, ForeignKey('engine_endpoint_description.id'), nullable=False)
         field1_name = Column(String(255), nullable=True)
         field2_name = Column(String(255), nullable=True)

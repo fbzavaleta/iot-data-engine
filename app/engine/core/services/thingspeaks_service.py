@@ -19,7 +19,9 @@ Copyright © fbzavaleta. All rights reserved.
 
 class ThingSpeaksService:
     def __init__(self, request: Request=None) -> None:
-        self.sql_engine = db_handler.MysqlEngine()
+        session = db_handler.DBConnectionPoolSingleton.get_instance().Session
+        engine = db_handler.MysqlEngine(session)
+        self.sql_engine = engine
         self.endpoint_table = Models().EngineEndpoint
         self.endpoint_description_table = Models().EngineEndpointDescription
         self.endpoint_description_field_table = Models().EngineEndpointDescriptionField
@@ -39,15 +41,18 @@ class ThingSpeaksService:
 
         if not self._skip_ingest_descriptions:
             desciptions_row = self.populate_descriptions_row(channel_description_response)
-            db_operation = db_handler.MysqlEngine().insert_row(Models().EngineEndpointDescription,
-                                                           desciptions_row.to_dict)
+            db_operation = self.sql_engine.insert_row(self.endpoint_description_table,
+                                                          desciptions_row.to_dict)            
             if not db_operation:
                 return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
-        
-        if not self._skip_ingest_descriptions_field:
-            description_field_row = self.populate_descriptions_row(channel_description_response)
-            db_operation = db_handler.MysqlEngine().insert_row(self.endpoint_description_field_table,
-                                                           description_field_row.to_dict)
+            description_id = self.sql_engine.select_one(self.endpoint_description_table, 
+                                                      [self.endpoint_description_table.id.name], self.endpoint_description_table.engine_endpoint_id.name, 
+                                                      self.api_parameters.endpoint_id)
+            rows_description_field = self.populate_descriptions_field_row(channel_description_response)
+            rows_description_field.engine_endpoint_description_id = description_id[0]
+
+            db_operation = self.sql_engine.insert_row(self.endpoint_description_field_table, 
+                                                      rows_description_field.to_dict)
             if not db_operation:
                 return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
             
@@ -73,9 +78,8 @@ class ThingSpeaksService:
         endpoint_desc_row.elevation = tks_response.elevation
         return endpoint_desc_row
     
-    def populate_descriptions_row(self, tks_response: ApiChannelResponse) -> EndpointDescriptionField:
+    def populate_descriptions_field_row(self, tks_response: ApiChannelResponse) -> EndpointDescriptionField:
          endpoint_desc_field_row = EndpointDescriptionField()
-         endpoint_desc_field_row.engine_endpoint_description_id = self._get_endpoint_description_id
          endpoint_desc_field_row.field1_name = tks_response.field1
          endpoint_desc_field_row.field2_name = tks_response.field2
          endpoint_desc_field_row.field3_name = tks_response.field3
@@ -123,25 +127,10 @@ class ThingSpeaksService:
             return True
         return False
     
-    @property
-    @memoized(maxsize=1)    
-    def _get_endpoint_description_field_id(self)-> Union[int, None]:
-        data = self.sql_engine.select_one(self.endpoint_description_field_table,
-                                     [self.endpoint_description_field_table.id.name],
-                                     self.endpoint_description_field_table.engine_endpoint_description_id.name, self._get_endpoint_description_id)
-        return data[0] if data else None
-    
-    @property
-    @memoized(maxsize=1)    
-    def _skip_ingest_descriptions_field(self)-> bool:
-        if self._get_endpoint_description_field_id:
-            return True
-        return False
-    
     def _skip_ingest_feed(self, last_entry)-> bool:
         data = self.sql_engine.select_one(self.sample_table,
                                      [self.sample_table.entry_id.name],
-                                     self.sample_table.engine_endpoint_id.name, self.api_parameters.endpoint_id, True)
+                                     self.sample_table.engine_endpoint_id.name, self.api_parameters.endpoint_id)
         last_entry_db =  max(data)[0] if data else None
 
         if not last_entry_db: #there is no any data in the table for these channel
@@ -156,7 +145,7 @@ class ThingSpeaksService:
             format_row = EngineDataSample(**feed)
             format_row.engine_endpoint_id = self.api_parameters.endpoint_id
             format_row.created_at = self._get_datetime(format_row.created_at)
-            db_operation = db_handler.MysqlEngine().insert_row(self.sample_table,
+            db_operation = self.sql_engine.insert_row(self.sample_table,
                                                 format_row.to_dict)
             if not db_operation:
                 return False

@@ -18,7 +18,7 @@ class DbPoolParameters:
     pool_size: int = 10
     max_overflow: int = 20
     pool_recycle: int = 300
-    pool_timeout: int = 2
+    pool_timeout: int = 10
     pool_pre_ping: bool = True
     pool_use_lifo: bool = True
 

@@ -63,12 +63,14 @@ class EndpointDescription:
     channel_name: str = None
     latitude: float = None
     longitude: float = None
-    elevation: float = None
+    elevation: str = None
+    last_row: int = None
 
     @property #TODO: This should be a decorator
     def to_dict(self):
         return {'engine_endpoint_id': self.engine_endpoint_id, 'channel_name': self.channel_name,
-                'latitude': self.latitude, 'longitude': self.longitude, 'elevation': self.elevation}
+                'latitude': self.latitude, 'longitude': self.longitude, 'elevation': self.elevation,
+                'last_row': self.last_row}
     
 @dataclass(frozen=False)
 class EndpointDescriptionField:

@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS  engine_endpoint_description (
     channel_name VARCHAR (255) NOT NULL,
     latitude FLOAT,
     longitude FLOAT,
-    elevation FLOAT,
+    elevation VARCHAR (255),
+    last_row INT,
     FOREIGN KEY (engine_endpoint_id) REFERENCES engine_endpoint(id),
     PRIMARY KEY (id)
 );
