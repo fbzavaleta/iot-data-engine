@@ -9,7 +9,8 @@ docker-compose up -d
 cd app || exit 1
 
 # Activate poetry shell and run the engine
-poetry shell & python3 engine_run.py&
+. "$(poetry env info --path)/bin/activate" || exit 1
+nohup python3 engine_run.py > engine_run.log 2>&1 &
 echo "Services started successfully."
 }
 
