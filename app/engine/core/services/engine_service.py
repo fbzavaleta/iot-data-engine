@@ -18,6 +18,9 @@ Copyright © fbzavaleta. All rights reserved.
 
 class EngineService:
     def __init__(self, request: Request=None) -> None:
+        session = db_handler.DBConnectionPoolSingleton.get_instance().Session
+        engine = db_handler.MysqlEngine(session)
+        self.sql_engine = engine        
         self.engine_response = EngineResponse(request)
     
     @property
@@ -30,7 +33,7 @@ class EngineService:
         if not endpoint_config.channel:
             return EngineErrors(ErrorCode.CHANNEL_NOT_FOUND, ErrorMessage.CHANNEL_NOT_FOUND).to_dict
         
-        db_operation = db_handler.MysqlEngine().insert_row(Models().EngineEndpoint, asdict(endpoint_config))
+        db_operation = self.sql_engine.insert_row(Models().EngineEndpoint, asdict(endpoint_config))
         if not db_operation:
             return EngineErrors(ErrorCode.DATABASE_ERROR, ErrorMessage.DATABASE_ERROR).to_dict
         

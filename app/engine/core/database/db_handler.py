@@ -57,11 +57,13 @@ class MysqlEngine:
             self.current_session.rollback()
             return False
 
-    def select_one(self, object_table, colselected_list, colfilter, targetvalue):
+    def select_one(self, object_table, colselected_list, colfilter, targetvalue, fetchall: bool = False) -> Dict[str, Any]:
         columns_selected = [column(col) for col in colselected_list]
         column_filter = column(colfilter)
         query = select(*columns_selected).where(column_filter == targetvalue).select_from(object_table)
         result = self.current_session.execute(query)
+        if fetchall:
+            return result.fetchall()
         return result.fetchone()
 
     def group_by(self, object_table, colselected_list, colfilter, targetvalue):

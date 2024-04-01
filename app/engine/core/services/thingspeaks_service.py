@@ -130,7 +130,8 @@ class ThingSpeaksService:
     def _skip_ingest_feed(self, last_entry)-> bool:
         data = self.sql_engine.select_one(self.sample_table,
                                      [self.sample_table.entry_id.name],
-                                     self.sample_table.engine_endpoint_id.name, self.api_parameters.endpoint_id)
+                                     self.sample_table.engine_endpoint_id.name, self.api_parameters.endpoint_id, fetchall=True)
+        
         last_entry_db =  max(data)[0] if data else None
 
         if not last_entry_db: #there is no any data in the table for these channel
