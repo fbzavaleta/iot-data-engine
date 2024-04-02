@@ -43,7 +43,7 @@ iot-data-engine exposes the following endpoints:
 
 1. **Configure Engine**
     ```bash
-    curl -X POST 'http://localhost:5000/configuration?channel=123456&token=XXXXYHUHHGG'
+    curl -X POST 'http://127.0.0.1:5000/configuration?channel=123456&token=XXXXYHUHHGG'
     ```
 
 2. **Start Data Ingestion**
