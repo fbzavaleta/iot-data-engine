@@ -1,14 +1,25 @@
 FROM ubuntu:latest
 
-RUN apt update -y
-RUN apt install python3 -y
-RUN apt install python3-pip -y
-RUN pip3 install numpy 
+RUN apt update -y && \
+    apt install -y python3 python3-pip
 
-WORKDIR /usr/app/rand-generator
+RUN pip install poetry==1.4.2
+RUN poetry config installer.max-workers 10
 
-COPY ./engine .
-COPY ./run_engine.py .
-COPY ./database.sql .
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-CMD ["python3", "./run_engine.py"]
+WORKDIR /usr/app/
+
+COPY pyproject.toml poetry.lock ./
+
+RUN poetry install  --without dev --no-root --no-interaction --no-ansi -vvv && rm -rf $POETRY_CACHE_DIR
+RUN poetry shell 
+
+COPY ./engine/ ./engine/
+COPY ./engine_run.py ./
+COPY ./database.sql ./
+
+CMD ["python3", "./engine_run.py"]

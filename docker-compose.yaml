@@ -28,3 +28,14 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
+
+# data enginering aplication
+  data-engine:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    restart: 'no'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db

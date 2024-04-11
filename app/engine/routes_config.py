@@ -4,10 +4,10 @@ from .core.routes import (
     bp_v1 as core_bp_v1,
 )
 
-RouteConfig = namedtuple('RouteConfig', 'blueprint options')
+RouteConfig = namedtuple("RouteConfig", "blueprint options")
 APP_ROUTES = (
-    RouteConfig(core_bp,    {}),
-    RouteConfig(core_bp_v1, {'url_prefix': '/analytics'}),
+    RouteConfig(core_bp, {}),
+    RouteConfig(core_bp_v1, {"url_prefix": "/analytics"}),
 )
 
 
