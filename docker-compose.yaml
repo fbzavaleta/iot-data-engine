@@ -32,7 +32,7 @@ services:
 # data enginering aplication
   data-engine:
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     restart: 'no'
     ports:
