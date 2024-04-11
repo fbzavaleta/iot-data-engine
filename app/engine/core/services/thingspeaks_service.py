@@ -1,3 +1,6 @@
+from functools import lru_cache as memoized
+from typing import Dict, Union, Iterator
+from flask import Request
 from app.engine.core.lib.thingspeaks_response import ThingSpeaksRequestResponse
 from app.engine.core.lib.engine_response import EngineResponse
 from app.engine.core.enums.engine import (
@@ -14,9 +17,6 @@ from app.engine.core.enums.engine import (
 from app.engine.core.enums.thingspeaks import ApiParameters, ApiChannelResponse
 from app.engine.core.database import db_handler
 from app.engine.core.database.db_model import Models
-from flask import Request
-from functools import lru_cache as memoized
-from typing import Dict, Union, Iterator
 
 
 """
