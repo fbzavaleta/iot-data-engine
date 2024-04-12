@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "app"
+name = "apps"
 version = "0.1.0"
 description = ""
 authors = ["fbzavaleta <benjamin1992.1992@gmail.com>"]
@@ -15,7 +15,7 @@ requests = "2.31.0"
 
 
 [tool.poetry.scripts]
-run-engine = "app.main:engine_app"
+run-engine = "apps.main_engine:engine_app"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"

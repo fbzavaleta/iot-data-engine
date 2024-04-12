@@ -5,7 +5,7 @@ from sqlalchemy.pool import QueuePool
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Dict, Any
 
-from app.engine.core.enums.common import DatabaseParameters, DbPoolParameters
+from apps.engine.core.enums.common import DatabaseParameters, DbPoolParameters
 
 """
 Author: Francis Benjamin Zavaleta, Eng

@@ -3,7 +3,7 @@ from typing import Dict, Union
 import ast
 from flask import Request
 
-from app.engine.core.enums.engine import EngineEndpoint
+from apps.engine.core.enums.engine import EngineEndpoint
 
 """
 Author: Francis Benjamin Zavaleta, Eng

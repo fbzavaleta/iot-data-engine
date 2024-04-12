@@ -1,9 +1,9 @@
 from functools import lru_cache as memoized
 from typing import Dict, Union, Iterator
 from flask import Request
-from app.engine.core.lib.thingspeaks_response import ThingSpeaksRequestResponse
-from app.engine.core.lib.engine_response import EngineResponse
-from app.engine.core.enums.engine import (
+from apps.engine.core.lib.thingspeaks_response import ThingSpeaksRequestResponse
+from apps.engine.core.lib.engine_response import EngineResponse
+from apps.engine.core.enums.engine import (
     ErrorCode,
     ErrorMessage,
     EngineErrors,
@@ -14,9 +14,9 @@ from app.engine.core.enums.engine import (
     EndpointDescriptionField,
     EngineDataSample,
 )
-from app.engine.core.enums.thingspeaks import ApiParameters, ApiChannelResponse
-from app.engine.core.database import db_handler
-from app.engine.core.database.db_model import Models
+from apps.engine.core.enums.thingspeaks import ApiParameters, ApiChannelResponse
+from apps.engine.core.database import db_handler
+from apps.engine.core.database.db_model import Models
 
 
 """
@@ -184,6 +184,7 @@ class ThingSpeaksService:
         last_entry_db = max(data)[0] if data else None
 
         if not last_entry_db:  # there is no any data in the table for these channel
+            self.new_rows = last_entry
             return False
         if last_entry_db < last_entry:  # there new data arrived
             self.new_rows = last_entry - last_entry_db

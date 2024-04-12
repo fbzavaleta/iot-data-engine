@@ -1,6 +1,6 @@
-from app.engine.core.lib.engine_response import EngineResponse
-from app.engine.core.enums.engine import EngineEndpoint
-from app.engine.core.enums.engine import (
+from apps.engine.core.lib.engine_response import EngineResponse
+from apps.engine.core.enums.engine import EngineEndpoint
+from apps.engine.core.enums.engine import (
     ErrorCode,
     ErrorMessage,
     EngineErrors,
@@ -8,9 +8,9 @@ from app.engine.core.enums.engine import (
     SucessMessage,
     EngineSuccess,
 )
-from app.engine.core.enums.common import ApiNotes
-from app.engine.core.database import db_handler
-from app.engine.core.database.db_model import Models
+from apps.engine.core.enums.common import ApiNotes
+from apps.engine.core.database import db_handler
+from apps.engine.core.database.db_model import Models
 from flask import Request
 
 from functools import lru_cache as memoized

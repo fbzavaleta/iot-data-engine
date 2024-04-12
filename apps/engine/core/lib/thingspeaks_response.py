@@ -2,7 +2,7 @@ import requests
 from functools import lru_cache as memoized
 from typing import Dict, List, Union, Iterator
 
-from app.engine.core.enums.thingspeaks import (
+from apps.engine.core.enums.thingspeaks import (
     ApiConstants,
     ApiParameters,
     ApiChannelResponse,
@@ -48,6 +48,8 @@ class ThingSpeaksRequestResponse:
         response_from_feed = self._get_thinkspeaks_response.get(
             self._constants.feed_key
         )
+        if response_from_feed is None:
+            return None        
         for feed in response_from_feed:
             yield feed
 
