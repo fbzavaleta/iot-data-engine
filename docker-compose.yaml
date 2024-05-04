@@ -30,12 +30,12 @@ services:
       MYSQL_ROOT_PASSWORD: root
 
 # data enginering aplication
-#  data-engine:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    restart: 'no'
-#    ports:
-#      - '5000:5000'
-#    depends_on:
-#      - db
+  data-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: 'no'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db
