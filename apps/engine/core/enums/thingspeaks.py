@@ -1,15 +1,18 @@
 from dataclasses import dataclass
 from typing import Optional
+
 """
 Author: Francis Benjamin Zavaleta, Eng
 Copyright © fbzavaleta. All rights reserved.
 """
 
+
 @dataclass(frozen=True)
 class ApiConstants:
-    url_base: str = 'https://api.thingspeak.com'
-    channel_key: str = 'channel'
-    feed_key: str = 'feeds'
+    url_base: str = "https://api.thingspeak.com"
+    channel_key: str = "channel"
+    feed_key: str = "feeds"
+
 
 @dataclass(frozen=False)
 class ApiParameters:
@@ -18,16 +21,22 @@ class ApiParameters:
     interval: int = None
     n_rows: Optional[int] = None
     endpoint_id: Optional[id] = None
-    
 
-    def __init__(self, channel_id: Optional[str] = None, api_key: Optional[str] = None, 
-                 interval: Optional[int]=None,n_rows: Optional[int]=None,
-                 endpoint_id: Optional[int]=None,**kwargs) -> None:
+    def __init__(
+        self,
+        channel_id: Optional[str] = None,
+        api_key: Optional[str] = None,
+        interval: Optional[int] = None,
+        n_rows: Optional[int] = None,
+        endpoint_id: Optional[int] = None,
+        **kwargs
+    ) -> None:
         self.channel_id = channel_id
         self.api_key = api_key
         self.interval = interval
         self.n_rows = n_rows
         self.endpoint_id = endpoint_id
+
 
 @dataclass(frozen=False)
 class ApiChannelResponse:
@@ -49,6 +58,7 @@ class ApiChannelResponse:
     field7: Optional[str] = None
     field8: Optional[str] = None
 
+
 @dataclass(frozen=False)
 class ApiFeedResponse:
     created_at: str
@@ -60,4 +70,4 @@ class ApiFeedResponse:
     field5: Optional[str] = None
     field6: Optional[str] = None
     field7: Optional[str] = None
-    field8: Optional[str] = None 
+    field8: Optional[str] = None

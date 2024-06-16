@@ -14,7 +14,7 @@ services:
     volumes:
       - './db-prod:/var/lib/mysql'
       - './local:/var/lib/mysql-files'
-      - ./app/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./apps/database.sql:/docker-entrypoint-initdb.d/database.sql
     command: --init-file=/docker-entrypoint-initdb.d/database.sql
 
 # WebUI for mysql database
@@ -28,3 +28,14 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
+
+# data enginering aplication
+  data-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: 'no'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db

@@ -3,14 +3,16 @@ from typing import Dict, Union
 import ast
 from flask import Request
 
-from engine.core.enums.engine import EngineEndpoint
+from apps.engine.core.enums.engine import EngineEndpoint
+
 """
 Author: Francis Benjamin Zavaleta, Eng
 Copyright © fbzavaleta. All rights reserved.
 """
 
+
 class EngineResponse:
-    def __init__(self, request:Request) -> None:
+    def __init__(self, request: Request) -> None:
         self.request = request
 
     @property
@@ -19,7 +21,7 @@ class EngineResponse:
         if not self.get_query_parameters:
             return None
         return self.get_query_parameters.to_dict()
-    
+
     @property
     @memoized(maxsize=1)
     def fetch_body_data(self) -> Union[Dict, None]:
@@ -40,5 +42,5 @@ class EngineResponse:
 
     @staticmethod
     def bytes2dict(data: bytes) -> Dict:
-        decoded_data = data.decode('UTF-8')
+        decoded_data = data.decode("UTF-8")
         return ast.literal_eval(decoded_data)
